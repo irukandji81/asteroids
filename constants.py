@@ -12,3 +12,12 @@ PLAYER_RADIUS = 20
 
 # Define the player's turn speed
 PLAYER_TURN_SPEED = 300
+
+# Define the player's speed
+PLAYER_SPEED = 200
+
+# Define the shot radius
+SHOT_RADIUS = 5
+
+# Define the player's shoot speed
+PLAYER_SHOOT_SPEED = 500
