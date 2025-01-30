@@ -44,8 +44,17 @@ def main():
     # Create a score variable
     score = 0
 
-    # Create a font for rendering the score
+    # Create a lives variable
+    lives = 3
+
+    # Create a font for rendering the score and lives
     font = pygame.font.Font(None, 36)
+
+    def respawn_player():
+        player.position = pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+        player.velocity = pygame.Vector2(0, 0)
+        player.rotation = 0
+        player.acceleration = pygame.Vector2(0, 0)  # Reset acceleration
 
     # Create the game loop
     while True:
@@ -59,8 +68,13 @@ def main():
         # Check for collisions between player and asteroids
         for asteroid in asteroids:
             if player.collides_with(asteroid):
-                print("Game over!")
-                return
+                lives -= 1
+                if lives > 0:
+                    print(f"Lives left: {lives}")
+                    respawn_player()
+                else:
+                    print("Game over!")
+                    return
 
         # Check for collisions between shots and asteroids
         for shot in shots:
@@ -83,6 +97,10 @@ def main():
         # Render the score
         score_text = font.render(f"Score: {score}", True, (255, 255, 255))
         screen.blit(score_text, (10, 10))
+
+        # Render the lives
+        lives_text = font.render(f"Lives: {lives}", True, (255, 255, 255))
+        screen.blit(lives_text, (SCREEN_WIDTH - 110, 10))
 
         # Refresh the screen
         pygame.display.flip()

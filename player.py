@@ -1,7 +1,8 @@
 # player.py
 import pygame
 from circleshape import CircleShape
-from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_SPEED, PLAYER_SHOOT_SPEED, PLAYER_SHOOT_COOLDOWN
+from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_ACCELERATION, PLAYER_SHOOT_SPEED, PLAYER_SHOOT_COOLDOWN
+from shot import Shot
 
 class Player(CircleShape):
     def __init__(self, x, y):
@@ -26,7 +27,15 @@ class Player(CircleShape):
 
     def accelerate(self, dt):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
-        self.acceleration += forward * PLAYER_SPEED * dt
+        self.acceleration = forward * PLAYER_ACCELERATION * dt
+
+    def shoot(self):
+        if self.shoot_timer > 0:
+            return
+        self.shoot_timer = PLAYER_SHOOT_COOLDOWN
+        shot = Shot(self.position.x, self.position.y)
+        forward = pygame.Vector2(0, 1).rotate(self.rotation)
+        shot.velocity = forward * PLAYER_SHOOT_SPEED
 
     def update(self, dt):
         self.shoot_timer = max(0, self.shoot_timer - dt)
@@ -39,12 +48,13 @@ class Player(CircleShape):
             self.rotate(dt)
         if keys[pygame.K_w]:
             self.accelerate(dt)
-        if keys[pygame.K_s]:
-            self.acceleration *= 0.95  # Decrease acceleration for braking
-        if keys[pygame.K_SPACE]:
-            self.shoot()
+        else:
+            self.acceleration = pygame.Vector2(0, 0)  # Stop accelerating but keep current velocity
 
         self.velocity += self.acceleration * dt
         self.position += self.velocity * dt
 
         self.wrap_around_screen()
+
+        if keys[pygame.K_SPACE]:
+            self.shoot()
