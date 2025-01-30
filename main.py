@@ -16,6 +16,10 @@ def main():
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
 
+    # Load the background image
+    background = pygame.image.load('space_background.png')
+    background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
     # Create a pygame.time.Clock object and dt variable
     clock = pygame.time.Clock()
     dt = 0
@@ -87,8 +91,8 @@ def main():
                     updatable.add(explosion)
                     drawable.add(explosion)
 
-        # Fill the screen with black color
-        screen.fill((0, 0, 0))
+        # Draw the background image
+        screen.blit(background, (0, 0))
 
         # Draw all drawable objects
         for drawable_object in drawable:
