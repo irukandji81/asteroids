@@ -23,7 +23,10 @@ class Asteroid(CircleShape):
 
     def draw(self, screen):
         rotated_points = [pygame.math.Vector2(p).rotate(self.angle) + self.position for p in self.points]
-        pygame.draw.polygon(screen, "gray", rotated_points)  # Fill with a solid color
+        # Draw the asteroid with a black border
+        pygame.draw.polygon(screen, "black", rotated_points)
+        # Draw the filled asteroid with a slight offset to create the border effect
+        pygame.draw.polygon(screen, "gray", rotated_points, 2)
 
     def update(self, dt):
         self.position += self.velocity * dt
