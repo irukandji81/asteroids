@@ -52,9 +52,10 @@ def start_menu(screen, background, menu_asteroids):
         
         clock.tick(60)  # Limit to 60 FPS
 
-def game_over_menu(screen, background, menu_asteroids):
+def game_over_menu(screen, background, menu_asteroids, score):
     font = pygame.font.Font(None, 74)
-    game_over_text = font.render("Game Over", True, (255, 255, 255))
+    game_over_text = font.render("GAME OVER!", True, (255, 255, 255))
+    final_score_text = font.render(f"Score: {score}",True, (255,255,255))
     retry_text = font.render("Press ENTER to Retry", True, (255, 255, 255))
     quit_text = font.render("Press ESC to Quit", True, (255, 255, 255))
 
@@ -69,6 +70,7 @@ def game_over_menu(screen, background, menu_asteroids):
             asteroid.draw(screen)
             
         screen.blit(game_over_text, (SCREEN_WIDTH//2 - game_over_text.get_width()//2, SCREEN_HEIGHT//4))
+        screen.blit(final_score_text, (SCREEN_WIDTH//2 - final_score_text.get_width()//2, SCREEN_HEIGHT//3))
         screen.blit(retry_text, (SCREEN_WIDTH//2 - retry_text.get_width()//2, SCREEN_HEIGHT//2))
         screen.blit(quit_text, (SCREEN_WIDTH//2 - quit_text.get_width()//2, SCREEN_HEIGHT//1.5))
         pygame.display.flip()
@@ -203,15 +205,15 @@ def main():
                         updatable.add(explosion)
                         drawable.add(explosion)
                         powerup_chance = random.random()
-                        if powerup_chance < 0.1 and shield_active_count() < 4:  # 10% chance to spawn a shield power-up
+                        if powerup_chance < 0.1 and shield_active_count() < 3:  # 10% chance to spawn a shield power-up
                             powerup = PowerUp(asteroid.position.x, asteroid.position.y)
                             updatable.add(powerup)
                             drawable.add(powerup)
-                        elif powerup_chance < 0.15 and not player.has_bomb and not bomb_active():  # Additional 5% chance to spawn a bomb power-up
+                        elif powerup_chance < 0.1 and not player.has_bomb and not bomb_active():  # Additional 5% chance to spawn a bomb power-up
                             bomb_powerup = BombPowerUp(asteroid.position.x, asteroid.position.y)
                             updatable.add(bomb_powerup)
                             drawable.add(bomb_powerup)
-                        elif powerup_chance < 0.2 and triple_shot_powerup_active_count(powerups) < 4:  # Additional 5% chance to spawn a triple-shot power-up
+                        elif powerup_chance < 0.1 and triple_shot_powerup_active_count(powerups) < 3:  # Additional 5% chance to spawn a triple-shot power-up
                             triple_shot_powerup = TripleShotPowerUp(asteroid.position.x, asteroid.position.y)
                             updatable.add(triple_shot_powerup)
                             drawable.add(triple_shot_powerup)
@@ -248,7 +250,7 @@ def main():
             # Cap the frame rate at 60 FPS and get delta time
             dt = clock.tick(60) / 1000
 
-        if not game_over_menu(screen, background, menu_asteroids):
+        if not game_over_menu(screen, background, menu_asteroids, score):
             return
 
 if __name__ == "__main__":
