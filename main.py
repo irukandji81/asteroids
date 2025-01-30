@@ -76,6 +76,9 @@ def main():
     def bomb_active():
         return any(isinstance(powerup, BombPowerUp) for powerup in powerups)
 
+    def shield_active_count():
+        return sum(1 for powerup in powerups if isinstance(powerup, PowerUp))
+
     # Create the game loop
     while True:
         for event in pygame.event.get():
@@ -111,7 +114,7 @@ def main():
                     updatable.add(explosion)
                     drawable.add(explosion)
                     powerup_chance = random.random()
-                    if powerup_chance < 0.1 and not player.has_shield:  # 10% chance to spawn a shield power-up
+                    if powerup_chance < 0.1 and shield_active_count() < 3:  # 10% chance to spawn a shield power-up
                         powerup = PowerUp(asteroid.position.x, asteroid.position.y)
                         updatable.add(powerup)
                         drawable.add(powerup)
