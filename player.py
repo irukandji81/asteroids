@@ -3,6 +3,7 @@ import pygame
 from circleshape import CircleShape
 from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_ACCELERATION, PLAYER_SHOOT_SPEED, PLAYER_SHOOT_COOLDOWN
 from shot import Shot
+from powerup import PowerUp 
 
 class Player(CircleShape):
     def __init__(self, x, y):
@@ -10,6 +11,7 @@ class Player(CircleShape):
         self.rotation = 0
         self.shoot_timer = 0
         self.acceleration = pygame.Vector2(0, 0)
+        self.has_shield = False
 
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -22,8 +24,12 @@ class Player(CircleShape):
     def draw(self, screen):
         # Draw the triangle with a black border
         pygame.draw.polygon(screen, "black", self.triangle())
-        # Draw the filled triangle with a slight offset to create the border effect
-        pygame.draw.polygon(screen, "white", self.triangle(), 2)
+        # Draw the filled triangle
+        pygame.draw.polygon(screen, "white", self.triangle())
+
+        # Draw the shield if the player has it
+        if self.has_shield:
+            pygame.draw.circle(screen, (0, 255, 255), (int(self.position.x), int(self.position.y)), self.radius + 5, 2)
 
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
@@ -71,3 +77,7 @@ class Player(CircleShape):
     def collides_with(self, other):
         distance = self.position.distance_to(other.position)
         return distance < (self.radius + other.radius)
+
+    def apply_powerup(self, powerup):
+        if isinstance(powerup, PowerUp):
+            self.has_shield = True

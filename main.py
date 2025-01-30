@@ -5,6 +5,8 @@ from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
 from explosion import Explosion
+from powerup import PowerUp
+import random
 
 def main():
     # Initialize pygame
@@ -29,12 +31,14 @@ def main():
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
     shots = pygame.sprite.Group()
+    powerups = pygame.sprite.Group()
 
     # Set the static containers fields
     Asteroid.containers = (asteroids, updatable, drawable)
     AsteroidField.containers = (updatable,)
     Shot.containers = (shots, updatable, drawable)
     Explosion.containers = (updatable, drawable)
+    PowerUp.containers = (powerups, updatable, drawable)
 
     # Instantiate a Player object and add to groups
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
@@ -59,6 +63,7 @@ def main():
         player.velocity = pygame.Vector2(0, 0)
         player.rotation = 0
         player.acceleration = pygame.Vector2(0, 0)  # Reset acceleration
+        player.has_shield = False  # Reset shield
 
     # Create the game loop
     while True:
@@ -72,13 +77,17 @@ def main():
         # Check for collisions between player and asteroids
         for asteroid in asteroids:
             if player.collides_with(asteroid):
-                lives -= 1
-                if lives > 0:
-                    print(f"Lives left: {lives}")
-                    respawn_player()
+                if player.has_shield:
+                    player.has_shield = False  # Use up the shield
+                    asteroid.kill()  # Destroy the asteroid
                 else:
-                    print("Game over!")
-                    return
+                    lives -= 1
+                    if lives > 0:
+                        print(f"Lives left: {lives}")
+                        respawn_player()
+                    else:
+                        print("Game over!")
+                        return
 
         # Check for collisions between shots and asteroids
         for shot in shots:
@@ -90,6 +99,16 @@ def main():
                     explosion = Explosion(asteroid.position.x, asteroid.position.y)
                     updatable.add(explosion)
                     drawable.add(explosion)
+                    if random.random() < 0.1:  # 10% chance to spawn a power-up
+                        powerup = PowerUp(asteroid.position.x, asteroid.position.y)
+                        updatable.add(powerup)
+                        drawable.add(powerup)
+
+        # Check for collisions between player and power-ups
+        for powerup in powerups:
+            if player.collides_with(powerup):
+                player.apply_powerup(powerup)
+                powerup.kill()
 
         # Draw the background image
         screen.blit(background, (0, 0))
