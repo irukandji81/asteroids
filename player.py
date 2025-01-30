@@ -37,6 +37,20 @@ class Player(CircleShape):
             pulsate_radius = self.radius + 5 + (5 * pygame.time.get_ticks() % 1000) / 1000.0 * 5
             pygame.draw.circle(screen, (0, 255, 255), (int(self.position.x), int(self.position.y)), int(pulsate_radius), 2)
 
+         # Draw fire when accelerating
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_w]:
+            self.draw_fire(screen)
+
+    def draw_fire(self, screen):
+            # Draw a fire triangle at the back of the ship
+            forward = pygame.Vector2(0, 1).rotate(self.rotation)
+            back = self.position - forward * self.radius
+            left = back + forward.rotate(45) * (self.radius / 2)
+            right = back + forward.rotate(-45) * (self.radius / 2)
+            fire_points = [back, left, right]
+            pygame.draw.polygon(screen, (255, 165, 0), fire_points)  # Orange fire
+
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
 
