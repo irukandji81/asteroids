@@ -3,7 +3,8 @@ import pygame
 from circleshape import CircleShape
 from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_ACCELERATION, PLAYER_SHOOT_SPEED, PLAYER_SHOOT_COOLDOWN
 from shot import Shot
-from powerup import PowerUp
+from powerup import PowerUp, BombPowerUp
+from asteroid import Asteroid
 
 class Player(CircleShape):
     def __init__(self, x, y):
@@ -12,6 +13,7 @@ class Player(CircleShape):
         self.shoot_timer = 0
         self.acceleration = pygame.Vector2(0, 0)
         self.has_shield = False
+        self.has_bomb = False
 
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -66,6 +68,9 @@ class Player(CircleShape):
         if keys[pygame.K_LSHIFT]:
             self.brake(dt)
 
+        if keys[pygame.K_e] and self.has_bomb:
+            self.activate_bomb()
+
         self.velocity += self.acceleration * dt
         self.position += self.velocity * dt
 
@@ -81,9 +86,19 @@ class Player(CircleShape):
     def apply_powerup(self, powerup):
         if isinstance(powerup, PowerUp):
             self.has_shield = True
+        elif isinstance(powerup, BombPowerUp):
+            self.has_bomb = True
+
+    def activate_bomb(self):
+        self.has_bomb = False
+        for asteroid in list(self.groups()[0]):
+            if isinstance(asteroid, Asteroid):
+                asteroid.kill()
 
     def get_active_powerups(self):
         active_powerups = []
         if self.has_shield:
             active_powerups.append("Shield")
+        if self.has_bomb:
+            active_powerups.append("Bomb")
         return active_powerups

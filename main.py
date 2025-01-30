@@ -5,7 +5,7 @@ from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
 from explosion import Explosion
-from powerup import PowerUp
+from powerup import PowerUp, BombPowerUp
 import random
 
 def main():
@@ -39,6 +39,7 @@ def main():
     Shot.containers = (shots, updatable, drawable)
     Explosion.containers = (updatable, drawable)
     PowerUp.containers = (powerups, updatable, drawable)
+    BombPowerUp.containers = (powerups, updatable, drawable)
 
     # Instantiate a Player object and add to groups
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
@@ -64,12 +65,16 @@ def main():
         player.rotation = 0
         player.acceleration = pygame.Vector2(0, 0)  # Reset acceleration
         player.has_shield = False  # Reset shield
+        player.has_bomb = False  # Reset bomb
 
         # Clear asteroids in the central part of the screen
         safe_zone_radius = 150  # Increased the safe zone radius
         for asteroid in asteroids:
             if player.position.distance_to(asteroid.position) < safe_zone_radius:
                 asteroid.kill()
+
+    def bomb_active():
+        return any(isinstance(powerup, BombPowerUp) for powerup in powerups)
 
     # Create the game loop
     while True:
@@ -105,10 +110,15 @@ def main():
                     explosion = Explosion(asteroid.position.x, asteroid.position.y)
                     updatable.add(explosion)
                     drawable.add(explosion)
-                    if random.random() < 0.1:  # 10% chance to spawn a power-up
+                    powerup_chance = random.random()
+                    if powerup_chance < 0.1 and not player.has_shield:  # 10% chance to spawn a shield power-up
                         powerup = PowerUp(asteroid.position.x, asteroid.position.y)
                         updatable.add(powerup)
                         drawable.add(powerup)
+                    elif powerup_chance < 0.2 and not player.has_bomb and not bomb_active():  # Additional 10% chance to spawn a bomb power-up
+                        bomb_powerup = BombPowerUp(asteroid.position.x, asteroid.position.y)
+                        updatable.add(bomb_powerup)
+                        drawable.add(bomb_powerup)
 
         # Check for collisions between player and power-ups
         for powerup in powerups:
