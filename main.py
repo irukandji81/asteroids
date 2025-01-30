@@ -5,7 +5,7 @@ from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
 from explosion import Explosion
-from powerup import PowerUp, BombPowerUp
+from powerup import PowerUp, BombPowerUp, TripleShotPowerUp
 import random
 
 def initialize_menu_asteroids(num_asteroids):
@@ -125,6 +125,7 @@ def main():
         Explosion.containers = (updatable, drawable)
         PowerUp.containers = (powerups, updatable, drawable)
         BombPowerUp.containers = (powerups, updatable, drawable)
+        TripleShotPowerUp.containers = (powerups, updatable, drawable)
 
         # Instantiate a Player object and add to groups
         player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
@@ -162,6 +163,9 @@ def main():
 
         def shield_active_count():
             return sum(1 for powerup in powerups if isinstance(powerup, PowerUp))
+        
+        def triple_shot_powerup_active_count(powerups):
+            return sum(1 for powerup in powerups if isinstance(powerup, TripleShotPowerUp))
 
         # Create the game loop
         game_over = False
@@ -199,14 +203,18 @@ def main():
                         updatable.add(explosion)
                         drawable.add(explosion)
                         powerup_chance = random.random()
-                        if powerup_chance < 0.1 and shield_active_count() < 3:  # 10% chance to spawn a shield power-up
+                        if powerup_chance < 0.1 and shield_active_count() < 4:  # 10% chance to spawn a shield power-up
                             powerup = PowerUp(asteroid.position.x, asteroid.position.y)
                             updatable.add(powerup)
                             drawable.add(powerup)
-                        elif powerup_chance < 0.2 and not player.has_bomb and not bomb_active():  # Additional 10% chance to spawn a bomb power-up
+                        elif powerup_chance < 0.15 and not player.has_bomb and not bomb_active():  # Additional 5% chance to spawn a bomb power-up
                             bomb_powerup = BombPowerUp(asteroid.position.x, asteroid.position.y)
                             updatable.add(bomb_powerup)
                             drawable.add(bomb_powerup)
+                        elif powerup_chance < 0.2 and triple_shot_powerup_active_count(powerups) < 4:  # Additional 5% chance to spawn a triple-shot power-up
+                            triple_shot_powerup = TripleShotPowerUp(asteroid.position.x, asteroid.position.y)
+                            updatable.add(triple_shot_powerup)
+                            drawable.add(triple_shot_powerup)
 
             # Check for collisions between player and power-ups
             for powerup in powerups:
@@ -229,8 +237,9 @@ def main():
             lives_text = font.render(f"Lives: {lives}", True, (255, 255, 255))
             screen.blit(lives_text, (SCREEN_WIDTH - 110, 10))
 
-            # Render active power-ups
-            powerups_text = font.render("Power-ups: " + ", ".join(player.get_active_powerups()), True, (255, 255, 255))
+            # Render active power-ups and triple-shot timer
+            active_powerups_text = "Power-ups: " + ", ".join(player.get_active_powerups())
+            powerups_text = font.render(active_powerups_text, True, (255, 255, 255))
             screen.blit(powerups_text, (10, 50))
 
             # Refresh the screen

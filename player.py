@@ -1,9 +1,8 @@
-# player.py
 import pygame
 from circleshape import CircleShape
 from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_ACCELERATION, PLAYER_SHOOT_SPEED, PLAYER_SHOOT_COOLDOWN
 from shot import Shot
-from powerup import PowerUp, BombPowerUp
+from powerup import PowerUp, BombPowerUp, TripleShotPowerUp
 from asteroid import Asteroid
 
 class Player(CircleShape):
@@ -14,7 +13,9 @@ class Player(CircleShape):
         self.acceleration = pygame.Vector2(0, 0)
         self.has_shield = False
         self.has_bomb = False
+        self.has_triple_shot = False
         self.shield_timer = 0  # Timer for the shield
+        self.triple_shot_timer = 0  # Timer for triple shot
         self.max_shield_time = 5  # Shield lasts for 5 seconds
 
     def triangle(self):
@@ -50,9 +51,17 @@ class Player(CircleShape):
         if self.shoot_timer > 0:
             return
         self.shoot_timer = PLAYER_SHOOT_COOLDOWN
-        shot = Shot(self.position.x, self.position.y)
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
-        shot.velocity = forward * PLAYER_SHOOT_SPEED
+        
+        if self.has_triple_shot:
+            angles = [-10, 0, 10]  # Spread angles for triple shot
+            for angle in angles:
+                shot_direction = forward.rotate(angle)
+                shot = Shot(self.position.x, self.position.y)
+                shot.velocity = shot_direction * PLAYER_SHOOT_SPEED
+        else:
+            shot = Shot(self.position.x, self.position.y)
+            shot.velocity = forward * PLAYER_SHOOT_SPEED
 
     def update(self, dt):
         self.shoot_timer = max(0, self.shoot_timer - dt)
@@ -89,6 +98,13 @@ class Player(CircleShape):
                 self.has_shield = False
                 self.shield_timer = 0
 
+        # Update triple shot timer
+        if self.triple_shot_timer > 0:
+            self.triple_shot_timer -= dt
+            if self.triple_shot_timer <= 0:
+                self.has_triple_shot = False
+                self.triple_shot_timer = 0
+
     def collides_with(self, other):
         distance = self.position.distance_to(other.position)
         return distance < (self.radius + other.radius)
@@ -98,6 +114,9 @@ class Player(CircleShape):
             self.has_shield = True
         elif isinstance(powerup, BombPowerUp):
             self.has_bomb = True
+        elif isinstance(powerup, TripleShotPowerUp):
+            self.has_triple_shot = True
+            self.triple_shot_timer = 10  # Triple shot lasts for 10 seconds
 
     def activate_bomb(self):
         self.has_bomb = False
@@ -111,6 +130,8 @@ class Player(CircleShape):
             active_powerups.append("Shield")
         if self.has_bomb:
             active_powerups.append("Bomb")
+        if self.has_triple_shot:
+            active_powerups.append(f"Triple Shot ({int(self.triple_shot_timer)}s)")  # Show remaining time
         return active_powerups
 
     def activate_shield(self):
