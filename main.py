@@ -64,8 +64,7 @@ def main():
         player.velocity = pygame.Vector2(0, 0)
         player.rotation = 0
         player.acceleration = pygame.Vector2(0, 0)  # Reset acceleration
-        player.has_shield = False  # Reset shield
-        player.has_bomb = False  # Reset bomb
+        player.activate_shield()  # Activate shield on respawn
 
         # Clear asteroids in the central part of the screen
         safe_zone_radius = 150  # Increased the safe zone radius

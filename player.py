@@ -14,6 +14,8 @@ class Player(CircleShape):
         self.acceleration = pygame.Vector2(0, 0)
         self.has_shield = False
         self.has_bomb = False
+        self.shield_timer = 0  # Timer for the shield
+        self.max_shield_time = 5  # Shield lasts for 5 seconds
 
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -31,7 +33,8 @@ class Player(CircleShape):
 
         # Draw the shield if the player has it
         if self.has_shield:
-            pygame.draw.circle(screen, (0, 255, 255), (int(self.position.x), int(self.position.y)), self.radius + 5, 2)
+            pulsate_radius = self.radius + 5 + (5 * pygame.time.get_ticks() % 1000) / 1000.0 * 5
+            pygame.draw.circle(screen, (0, 255, 255), (int(self.position.x), int(self.position.y)), int(pulsate_radius), 2)
 
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
@@ -79,6 +82,13 @@ class Player(CircleShape):
         if keys[pygame.K_SPACE]:
             self.shoot()
 
+        # Update shield timer
+        if self.shield_timer > 0:
+            self.shield_timer -= dt
+            if self.shield_timer <= 0:
+                self.has_shield = False
+                self.shield_timer = 0
+
     def collides_with(self, other):
         distance = self.position.distance_to(other.position)
         return distance < (self.radius + other.radius)
@@ -102,3 +112,7 @@ class Player(CircleShape):
         if self.has_bomb:
             active_powerups.append("Bomb")
         return active_powerups
+
+    def activate_shield(self):
+        self.has_shield = True
+        self.shield_timer = self.max_shield_time  # Activate shield for 5 seconds
