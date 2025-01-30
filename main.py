@@ -4,6 +4,7 @@ from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
+from explosion import Explosion
 
 def main():
     # Initialize pygame
@@ -29,6 +30,7 @@ def main():
     Asteroid.containers = (asteroids, updatable, drawable)
     AsteroidField.containers = (updatable,)
     Shot.containers = (shots, updatable, drawable)
+    Explosion.containers = (updatable, drawable)
 
     # Instantiate a Player object and add to groups
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
@@ -67,6 +69,9 @@ def main():
                     shot.kill()
                     asteroid.split()
                     score += 10  # Increase score when an asteroid is destroyed
+                    explosion = Explosion(asteroid.position.x, asteroid.position.y)
+                    updatable.add(explosion)
+                    drawable.add(explosion)
 
         # Fill the screen with black color
         screen.fill((0, 0, 0))
