@@ -39,6 +39,12 @@ def main():
     asteroid_field = AsteroidField()
     updatable.add(asteroid_field)
 
+    # Create a score variable
+    score = 0
+
+    # Create a font for rendering the score
+    font = pygame.font.Font(None, 36)
+
     # Create the game loop
     while True:
         for event in pygame.event.get():
@@ -60,6 +66,7 @@ def main():
                 if shot.collides_with(asteroid):
                     shot.kill()
                     asteroid.split()
+                    score += 10  # Increase score when an asteroid is destroyed
 
         # Fill the screen with black color
         screen.fill((0, 0, 0))
@@ -67,6 +74,10 @@ def main():
         # Draw all drawable objects
         for drawable_object in drawable:
             drawable_object.draw(screen)
+
+        # Render the score
+        score_text = font.render(f"Score: {score}", True, (255, 255, 255))
+        screen.blit(score_text, (10, 10))
 
         # Refresh the screen
         pygame.display.flip()
