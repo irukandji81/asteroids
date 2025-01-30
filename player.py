@@ -2,7 +2,7 @@
 import pygame
 from circleshape import CircleShape
 from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_ACCELERATION, PLAYER_SHOOT_SPEED, PLAYER_SHOOT_COOLDOWN
-from shot import Shot
+from shot import Shot  # Make sure this import statement is included
 
 class Player(CircleShape):
     def __init__(self, x, y):
@@ -29,6 +29,9 @@ class Player(CircleShape):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
         self.acceleration = forward * PLAYER_ACCELERATION * dt
 
+    def brake(self, dt):
+        self.velocity *= 0.9  # Apply a braking factor to reduce velocity
+
     def shoot(self):
         if self.shoot_timer > 0:
             return
@@ -50,6 +53,9 @@ class Player(CircleShape):
             self.accelerate(dt)
         else:
             self.acceleration = pygame.Vector2(0, 0)  # Stop accelerating but keep current velocity
+
+        if keys[pygame.K_LSHIFT]:
+            self.brake(dt)
 
         self.velocity += self.acceleration * dt
         self.position += self.velocity * dt
