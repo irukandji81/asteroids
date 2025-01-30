@@ -26,4 +26,4 @@ PLAYER_SHOOT_SPEED = 500
 PLAYER_SHOOT_COOLDOWN = 0.3
 
 # Define the player's acceleration speed
-PLAYER_ACCELERATION = 5000  # Increase this value for faster acceleration
+PLAYER_ACCELERATION = 7000  # Increase this value for faster acceleration
