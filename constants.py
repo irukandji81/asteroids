@@ -21,3 +21,6 @@ SHOT_RADIUS = 5
 
 # Define the player's shoot speed
 PLAYER_SHOOT_SPEED = 500
+
+# Define the player's shoot cooldown
+PLAYER_SHOOT_COOLDOWN = 0.3
