@@ -19,7 +19,7 @@ def main():
     print(f"Screen height: {SCREEN_HEIGHT}")
 
     # Load the background image
-    background = pygame.image.load('space_background.png')
+    background = pygame.image.load('starry_dark_background.png')
     background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     # Create a pygame.time.Clock object and dt variable
@@ -64,6 +64,12 @@ def main():
         player.rotation = 0
         player.acceleration = pygame.Vector2(0, 0)  # Reset acceleration
         player.has_shield = False  # Reset shield
+
+        # Clear asteroids in the central part of the screen
+        safe_zone_radius = 150
+        for asteroid in asteroids:
+            if player.position.distance_to(asteroid.position) < safe_zone_radius:
+                asteroid.kill()
 
     # Create the game loop
     while True:
