@@ -66,7 +66,7 @@ def main():
         player.has_shield = False  # Reset shield
 
         # Clear asteroids in the central part of the screen
-        safe_zone_radius = 150
+        safe_zone_radius = 150  # Increased the safe zone radius
         for asteroid in asteroids:
             if player.position.distance_to(asteroid.position) < safe_zone_radius:
                 asteroid.kill()
@@ -130,6 +130,10 @@ def main():
         # Render the lives
         lives_text = font.render(f"Lives: {lives}", True, (255, 255, 255))
         screen.blit(lives_text, (SCREEN_WIDTH - 110, 10))
+
+        # Render active power-ups
+        powerups_text = font.render("Power-ups: " + ", ".join(player.get_active_powerups()), True, (255, 255, 255))
+        screen.blit(powerups_text, (10, 50))
 
         # Refresh the screen
         pygame.display.flip()

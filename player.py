@@ -3,7 +3,7 @@ import pygame
 from circleshape import CircleShape
 from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_ACCELERATION, PLAYER_SHOOT_SPEED, PLAYER_SHOOT_COOLDOWN
 from shot import Shot
-from powerup import PowerUp 
+from powerup import PowerUp
 
 class Player(CircleShape):
     def __init__(self, x, y):
@@ -81,3 +81,9 @@ class Player(CircleShape):
     def apply_powerup(self, powerup):
         if isinstance(powerup, PowerUp):
             self.has_shield = True
+
+    def get_active_powerups(self):
+        active_powerups = []
+        if self.has_shield:
+            active_powerups.append("Shield")
+        return active_powerups
