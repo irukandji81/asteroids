@@ -20,7 +20,7 @@ def initialize_menu_asteroids(num_asteroids):
 
 def start_menu(screen, background, menu_asteroids):
     font = pygame.font.Font(None, 74)
-    title_text = font.render("Asteroids Game", True, (255, 255, 255))
+    title_text = font.render("Irukanjoids Game", True, (255, 255, 255))
     start_text = font.render("Press ENTER to Start", True, (255, 255, 255))
     quit_text = font.render("Press ESC to Quit", True, (255, 255, 255))
 
@@ -91,7 +91,7 @@ def game_over_menu(screen, background, menu_asteroids, score):
 def main():
     # Initialize pygame
     pygame.init()
-    print("Starting asteroids!")
+    print("Starting Irukanjoids!")
 
     # Set up the game window
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
